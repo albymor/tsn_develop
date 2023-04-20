@@ -16,7 +16,7 @@ fi
 
 BASE_TIME=$((`date +%s%N`))
 
-#BASE_TIME=$(($i - ($i % 1000000000)))
+#BASE_TIME=$(($i - ($i % 1000000)))
 BATCH_FILE=taprio.batch
 
 cat > $BATCH_FILE <<EOF
@@ -25,7 +25,7 @@ qdisc replace dev $IFACE parent root handle 100 taprio \\
       map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \\
       queues 1@0 1@1 2@2 \\
       base-time $BASE_TIME \\
-      sched-entry S ff 300000 \\
+      sched-entry S ff 1000000 \\
       clockid CLOCK_TAI
 
 qdisc replace dev $IFACE parent 100:1 etf \\
