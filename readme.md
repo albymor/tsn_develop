@@ -35,7 +35,7 @@ sudo ip addr add 192.168.1.206/24 dev enp89s0
 Lanciare nuovo send_udp_tai
     
 ```bash
-sudo ./send_udp_tai -i enp89s0 -S <IP SECONDO NUC>
+sudo ./send_udp_tai -i enp89s0 -S 192.168.1.205 -t 3 -P 1000000 -o 10000
 # anche senza il parametro -S dovrebbe funzionare
 ```
 

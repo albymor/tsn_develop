@@ -14,9 +14,10 @@ if [ -z $IFACE ]; then
     exit -1
 fi
 
-BASE_TIME=$((`date +%s%N`))
-
+i=$((`date +%s%N`))
+echo $i
 #BASE_TIME=$(($i - ($i % 1000000000)))
+BASE_TIME=$((($i / 1000000000 + 1) * 1000000000))
 BATCH_FILE=taprio.batch
 
 cat > $BATCH_FILE <<EOF

@@ -98,6 +98,7 @@ static int server_rcv_port = SERVER_RCV_PORT;
 static int client_snd_port = CLIENT_SEND_PORT;
 static int use_deadline_mode = 0;
 static int receive_errors = 0;
+static int time_offset = 0;
 static uint64_t base_time = 0;
 static struct sock_txtime sk_txtime;
 static char *dest_addr = DEST_IPADDR;
@@ -315,6 +316,7 @@ static int process_socket_error_queue(int fd)
 
 void sigint_handler(int s)
 {
+	exit(0);
 	struct timespec ts, actual_ts;
 	int cnt, err, i, j = 0, k, index;
 	__u64 txtime, base_ts, invalid_param_ts, missed_deadline_ts;
@@ -424,9 +426,16 @@ static int run_nanosleep(clockid_t clkid, int fd)
 	normalize(&ts);
 
 	txtime = ts.tv_sec * ONE_SEC + ts.tv_nsec;
+	fprintf(stderr, "\ntxtime of 1st packet is without weketx_delay: %llu\n", txtime);
+
 	txtime += waketx_delay;
 
 	fprintf(stderr, "\ntxtime of 1st packet is: %llu\n", txtime);
+
+	txtime += time_offset;
+
+	fprintf(stderr, "\ntxtime of 1st packet is with offset: %llu\n", txtime);
+
 	num = 0;
 
 	while (running)
@@ -571,6 +580,7 @@ static void usage(char *progname)
 			" -U [port]     use udp port client side 'port'\n"
 			" -f [name]     provide file name\n"
 			" -S [IP]       provide destination IP address\n"
+			" -o [offset]   Offset from base time\n"
 			"\n",
 			progname, DEFAULT_DELAY, DEFAULT_PERIOD, DEFAULT_PRIORITY);
 }
@@ -586,7 +596,7 @@ int main(int argc, char *argv[])
 	/* Process the command line arguments. */
 	progname = strrchr(argv[0], '/');
 	progname = progname ? 1 + progname : argv[0];
-	while (EOF != (c = getopt(argc, argv, "c:d:hi:n:p:P:st:DEb:u:rU:f:S:")))
+	while (EOF != (c = getopt(argc, argv, "c:d:hi:n:p:P:st:DEb:u:rU:f:S:o:")))
 	{
 		switch (c)
 		{
@@ -640,6 +650,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'S':
 			dest_addr = optarg;
+			break;
+		case 'o':
+			time_offset = atoi(optarg);
 			break;
 		case '?':
 			usage(progname);
