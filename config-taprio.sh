@@ -25,11 +25,10 @@ qdisc replace dev $IFACE parent root handle 100 taprio \\
       num_tc 3 \\
       map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \\
       queues 1@0 1@1 2@2 \\
-      base-time $BASE_TIME \\
       sched-entry S 01 300000 \\
       sched-entry S 02 300000 \\
       sched-entry S 04 400000 \\
-      clockid CLOCK_TAI
+      flags 0x2
 
 qdisc replace dev $IFACE parent 100:1 etf \\
       offload delta 200000 clockid CLOCK_TAI skip_sock_check
